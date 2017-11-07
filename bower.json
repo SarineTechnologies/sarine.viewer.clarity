@@ -1,0 +1,19 @@
+{
+  "name": "sarine.viewer.clarity",
+  "version": "0.1.0",
+  "main": "dist/sarine.viewer.clarity.js",
+  "ignore": [
+    ".git",
+    "node_modules",
+    "package.json",
+    "Gruntfile.js"
+  ],
+  "dependencies": {
+    "sarine.viewer": "https://github.com/SarineTechnologies/sarine.viewer.git#v0.1.0"    
+  },
+  "exportsOverride": {
+        "sarine.*": {        
+          "coffee": "**/*.coffee"
+        }
+    }
+}
