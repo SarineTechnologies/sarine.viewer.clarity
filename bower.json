@@ -9,7 +9,7 @@
     "Gruntfile.js"
   ],
   "dependencies": {
-    "sarine.viewer": "https://github.com/SarineTechnologies/sarine.viewer.git#v0.1.0"    
+    "sarine.viewer": "https://github.com/SarineTechnologies/sarine.viewer.git#v0.3.5"    
   },
   "exportsOverride": {
         "sarine.*": {        
