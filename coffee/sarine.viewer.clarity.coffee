@@ -1,5 +1,5 @@
 ###!
-sarine.viewer.clarity - v0.1.0 -  Tuesday, November 14th, 2017, 5:23:39 PM 
+sarine.viewer.clarity - v0.1.0 -  Wednesday, November 15th, 2017, 6:25:20 PM 
  The source code, name, and look and feel of the software are Copyright © 2015 Sarine Technologies Ltd. All Rights Reserved. You may not duplicate, copy, reuse, sell or otherwise exploit any portion of the code, content or visual design elements without express written permission from Sarine Technologies Ltd. The terms and conditions of the sarine.com website (http://sarine.com/terms-and-conditions/) apply to the access and use of this software.
 ###
 class Clarity extends Viewer
@@ -10,9 +10,15 @@ class Clarity extends Viewer
 	diamondImage = ""
 	baseUrl = ""
 	dragText = ""
+	
 	constructor: (options) -> 		
-		
 		super(options)	
+
+		@clarityTimeoutIds = {
+			left : null,
+			right : null,
+			mid : null
+		}
 		# get from config the drag icon color
 		clarityConfig = (window.configuration.experiences.filter((i)-> return i.atom == 'clarityView'))[0]		
 		iconCss = if clarityConfig.iconCss then clarityConfig.iconCss else "default-theme"
@@ -68,17 +74,23 @@ class Clarity extends Viewer
 					_t.loadAssets(assets,()->
 						beforeAfter = [{element:'script',src:baseUrl + 'beforeafter/sarine.init.min.js'}]
 						_t.loadAssets(beforeAfter,()->
+							# Hide the tool tip on load, in widget it causes display issue.
 							$(".cq-beforeafter i").tooltipster('hide')
+
+							# register events for external use (widget, viewer creator..)
+							_t.registerAnimateEvent(_t)
+							_t.registerAutoAnimateEvent(_t)
+							_t.registerClearAnimationEvent(_t)
 							defer.resolve(_t)
 						)
 					)
 					
 				else
-					@loadNoStoneImage(_t)
+					_t.loadNoStoneImage(_t)
 					defer.resolve(_t)
 			)
 		else
-			@loadNoStoneImage(_t)
+			_t.loadNoStoneImage(_t)
 			defer.resolve(_t)
 
 		defer
@@ -98,6 +110,88 @@ class Clarity extends Viewer
 			canvas.attr({"class": "no_stone" ,"width": img.width, "height": img.height}) 
 			canvas[0].getContext("2d").drawImage(img, 0, 0, img.width, img.height)
 			_t.element.append(canvas)
+		
+		return
+	# allow animation of the atom for a specified position
+	registerAnimateEvent:(_t)->
+		$curElement = _t.element
+
+		$curElement.on("animateClarity",(event,position,duration) ->
+			$imageContainer = $curElement.find('.cq-beforeafter')
+			positionToAnimate = 0
+		
+			switch position
+				when "left" then positionToAnimate = 0
+				when "middle" then positionToAnimate = $imageContainer.width() / 2
+				when "right" then positionToAnimate = $imageContainer.width()
+
+			_t.animateAtom(positionToAnimate,duration,$curElement)
+		)
+
+		return
+
+	# auto animate the atom to the left, right and mid
+	registerAutoAnimateEvent:(_t)->
+		$curElement = @element
+		$imageContainer = $curElement.find(".cq-beforeafter")
+
+		$curElement.on("autoAnimateClarity",() ->
+			_t.clarityTimeoutIds.left = setTimeout(()->
+				_t.animateAtom(0,800,$curElement,()->
+					_t.clarityTimeoutIds.right = setTimeout(()->
+						_t.animateAtom($imageContainer.width(),500,$curElement,()->
+							_t.clarityTimeoutIds.mid = setTimeout(()->
+								_t.animateAtom($imageContainer.width() / 2,250,$curElement)
+								return
+							,500)
+							return
+						)
+						return
+					,1000)
+					return
+				)
+				return
+			,1000)
+			return
+		)
+
+		return
+
+	registerClearAnimationEvent:()->
+		# Clear all animations / tooltips
+		_t = @
+		$curElement = _t.element
+
+		$curElement.on("clearAnimations",() ->
+			clearTimeout(_t.clarityTimeoutIds.left)
+			clearTimeout(_t.clarityTimeoutIds.right)
+			clearTimeout(_t.clarityTimeoutIds.mid)
+			# Buttons animation
+			$curElement.find('.cq-beforeafter .cq-beforeafter-handle').finish()
+			# Prevent the tooltip from appearing when on other experiences
+			$curElement.find(".cq-beforeafter i").tooltipster('hide')
+		)
+
+		return
+
+	# Excecute the animation
+	animateAtom:(position,duration,$element,completeCallback)->
+		$tooltip = $element.find("i")
+		$handle = $element.find(".cq-beforeafter-handle")
+		$resize = $element.find('.cq-beforeafter-resize')
+
+		$handle.animate({
+			'left': position},{
+			duration: duration,
+			step: (now)->
+				$resize.css('width', now)
+				if($tooltip)
+					$tooltip.tooltipster('reposition')
+					$tooltip.tooltipster('show')
+			,
+			complete:completeCallback})
+		
+		return
 
 @Clarity = Clarity
 		
