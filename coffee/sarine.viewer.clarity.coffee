@@ -1,5 +1,5 @@
 ###!
-sarine.viewer.clarity - v0.1.0 -  Wednesday, November 15th, 2017, 6:25:20 PM 
+sarine.viewer.clarity - v0.2.0 -  Monday, November 27th, 2017, 5:04:14 PM 
  The source code, name, and look and feel of the software are Copyright © 2015 Sarine Technologies Ltd. All Rights Reserved. You may not duplicate, copy, reuse, sell or otherwise exploit any portion of the code, content or visual design elements without express written permission from Sarine Technologies Ltd. The terms and conditions of the sarine.com website (http://sarine.com/terms-and-conditions/) apply to the access and use of this software.
 ###
 class Clarity extends Viewer
@@ -126,6 +126,10 @@ class Clarity extends Viewer
 				when "right" then positionToAnimate = $imageContainer.width()
 
 			_t.animateAtom(positionToAnimate,duration,$curElement)
+		)
+
+		$curElement.on("mousedown vmousedown",'.cq-compareslider-draggable', (e) ->
+			$curElement.trigger('onDrag')
 		)
 
 		return
