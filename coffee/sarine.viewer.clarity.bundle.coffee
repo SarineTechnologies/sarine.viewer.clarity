@@ -1,5 +1,5 @@
 ###!
-sarine.viewer.clarity - v0.2.0 -  Monday, November 27th, 2017, 5:04:14 PM 
+sarine.viewer.clarity - v0.4.0 -  Tuesday, November 28th, 2017, 4:10:26 PM 
  The source code, name, and look and feel of the software are Copyright © 2015 Sarine Technologies Ltd. All Rights Reserved. You may not duplicate, copy, reuse, sell or otherwise exploit any portion of the code, content or visual design elements without express written permission from Sarine Technologies Ltd. The terms and conditions of the sarine.com website (http://sarine.com/terms-and-conditions/) apply to the access and use of this software.
 ###
 
@@ -196,11 +196,13 @@ class Clarity extends Viewer
 
 		$curElement.on("autoAnimateClarity",() ->
 			_t.clarityTimeoutIds.left = setTimeout(()->
-				_t.animateAtom(0,800,$curElement,()->
+				_t.animateAtom(0,800,$curElement,()-> # move to the left
 					_t.clarityTimeoutIds.right = setTimeout(()->
-						_t.animateAtom($imageContainer.width(),500,$curElement,()->
+						_t.animateAtom($imageContainer.width(),500,$curElement,()-> # move to the right
 							_t.clarityTimeoutIds.mid = setTimeout(()->
-								_t.animateAtom($imageContainer.width() / 2,250,$curElement)
+								_t.animateAtom($imageContainer.width() / 2,250,$curElement,() -> # move to the middle
+									$curElement.trigger('autoAnimateDone')
+								)
 								return
 							,500)
 							return

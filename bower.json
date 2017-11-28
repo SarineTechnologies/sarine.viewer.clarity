@@ -1,6 +1,6 @@
 {
   "name": "sarine.viewer.clarity",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "main": "dist/sarine.viewer.clarity.js",
   "ignore": [
     ".git",
