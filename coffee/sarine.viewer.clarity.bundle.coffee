@@ -1,5 +1,5 @@
 ###!
-sarine.viewer.clarity - v0.4.0 -  Tuesday, November 28th, 2017, 4:10:26 PM 
+sarine.viewer.clarity - v0.5.0 -  Wednesday, November 29th, 2017, 3:13:47 PM 
  The source code, name, and look and feel of the software are Copyright © 2015 Sarine Technologies Ltd. All Rights Reserved. You may not duplicate, copy, reuse, sell or otherwise exploit any portion of the code, content or visual design elements without express written permission from Sarine Technologies Ltd. The terms and conditions of the sarine.com website (http://sarine.com/terms-and-conditions/) apply to the access and use of this software.
 ###
 
@@ -180,7 +180,7 @@ class Clarity extends Viewer
 				when "middle" then positionToAnimate = $imageContainer.width() / 2
 				when "right" then positionToAnimate = $imageContainer.width()
 
-			_t.animateAtom(positionToAnimate,duration,$curElement)
+			_t.animateAtom(positionToAnimate,duration,false,$curElement)
 		)
 
 		$curElement.on("mousedown vmousedown",'.cq-compareslider-draggable', (e) ->
@@ -196,11 +196,11 @@ class Clarity extends Viewer
 
 		$curElement.on("autoAnimateClarity",() ->
 			_t.clarityTimeoutIds.left = setTimeout(()->
-				_t.animateAtom(0,800,$curElement,()-> # move to the left
+				_t.animateAtom(0,800,true,$curElement,()-> # move to the left
 					_t.clarityTimeoutIds.right = setTimeout(()->
-						_t.animateAtom($imageContainer.width(),500,$curElement,()-> # move to the right
+						_t.animateAtom($imageContainer.width(),500,true,$curElement,()-> # move to the right
 							_t.clarityTimeoutIds.mid = setTimeout(()->
-								_t.animateAtom($imageContainer.width() / 2,250,$curElement,() -> # move to the middle
+								_t.animateAtom($imageContainer.width() / 2,250,true,$curElement,() -> # move to the middle
 									$curElement.trigger('autoAnimateDone')
 								)
 								return
@@ -233,10 +233,16 @@ class Clarity extends Viewer
 			$curElement.find(".cq-beforeafter i").tooltipster('hide')
 		)
 
+		$curElement.on("updateTooltip",(event,action) ->
+			$tooltip = $curElement.find("i")
+			if($tooltip)
+				$tooltip.tooltipster(action)
+		)
+
 		return
 
 	# Excecute the animation
-	animateAtom:(position,duration,$element,completeCallback)->
+	animateAtom:(position,duration,isAutoAnimate,$element,completeCallback)->
 		$tooltip = $element.find("i")
 		$handle = $element.find(".cq-beforeafter-handle")
 		$resize = $element.find('.cq-beforeafter-resize')
@@ -246,7 +252,7 @@ class Clarity extends Viewer
 			duration: duration,
 			step: (now)->
 				$resize.css('width', now)
-				if($tooltip)
+				if($tooltip and isAutoAnimate)
 					$tooltip.tooltipster('reposition')
 					$tooltip.tooltipster('show')
 			,
