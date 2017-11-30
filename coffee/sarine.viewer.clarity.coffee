@@ -1,5 +1,5 @@
 ###!
-sarine.viewer.clarity - v0.5.0 -  Wednesday, November 29th, 2017, 3:13:48 PM 
+sarine.viewer.clarity - v0.6.0 -  Thursday, November 30th, 2017, 11:52:47 AM 
  The source code, name, and look and feel of the software are Copyright © 2015 Sarine Technologies Ltd. All Rights Reserved. You may not duplicate, copy, reuse, sell or otherwise exploit any portion of the code, content or visual design elements without express written permission from Sarine Technologies Ltd. The terms and conditions of the sarine.com website (http://sarine.com/terms-and-conditions/) apply to the access and use of this software.
 ###
 class Clarity extends Viewer
@@ -51,9 +51,9 @@ class Clarity extends Viewer
 				imageElement = $(img)
 				if(!imageElement.hasClass('no_stone'))
 					_t.element.append("<div class=\'cq-beforeafter\'>
-											<img class='cq-beforeafter-img' src='#{plottingImage}'>
+											<img class='cq-beforeafter-img' src='#{diamondImage}'>
 											<div class='cq-beforeafter-resize'>
-												<img class='cq-beforeafter-img' src='#{diamondImage}'>
+												<img class='cq-beforeafter-img' src='#{plottingImage}'>
 											</div>
 											<span class='cq-beforeafter-handle'>
 												<i class='entypo-icon entypo-icon-code #{iconCss}' title='#{dragText}'>
@@ -81,6 +81,7 @@ class Clarity extends Viewer
 							_t.registerAnimateEvent(_t)
 							_t.registerAutoAnimateEvent(_t)
 							_t.registerClearAnimationEvent(_t)
+							_t.registerDraggingEvent(_t)
 							defer.resolve(_t)
 						)
 					)
@@ -115,9 +116,9 @@ class Clarity extends Viewer
 	# allow animation of the atom for a specified position
 	registerAnimateEvent:(_t)->
 		$curElement = _t.element
+		$imageContainer = $curElement.find('.cq-beforeafter')
 
 		$curElement.on("animateClarity",(event,position,duration) ->
-			$imageContainer = $curElement.find('.cq-beforeafter')
 			positionToAnimate = 0
 		
 			switch position
@@ -128,22 +129,40 @@ class Clarity extends Viewer
 			_t.animateAtom(positionToAnimate,duration,false,$curElement)
 		)
 
-		$curElement.on("mousedown vmousedown",'.cq-compareslider-draggable', (e) ->
-			$curElement.trigger('onDrag')
+		return
+	# dragging events - when drag accrues, when you get the the edges and middle.
+	registerDraggingEvent:(_t)->
+		$curElement = _t.element
+		$imageContainer = $curElement.find('.cq-beforeafter')
+
+		# all these events are triggered by the plugin
+		$imageContainer.on("dragging",()->
+			$curElement.trigger('dragging')
+		)
+		
+		$imageContainer.on("leftEdge",()->
+			$curElement.trigger('leftEdge')
+		)
+
+		$imageContainer.on("rightEdge",()->
+			$curElement.trigger('rightEdge')
+		)
+
+		$imageContainer.on("middle",()->
+			$curElement.trigger('middle')
 		)
 
 		return
-
 	# auto animate the atom to the left, right and mid
 	registerAutoAnimateEvent:(_t)->
 		$curElement = @element
 		$imageContainer = $curElement.find(".cq-beforeafter")
 
 		$curElement.on("autoAnimateClarity",() ->
-			_t.clarityTimeoutIds.left = setTimeout(()->
-				_t.animateAtom(0,800,true,$curElement,()-> # move to the left
-					_t.clarityTimeoutIds.right = setTimeout(()->
-						_t.animateAtom($imageContainer.width(),500,true,$curElement,()-> # move to the right
+			_t.clarityTimeoutIds.right = setTimeout(()->
+				_t.animateAtom($imageContainer.width(),800,true,$curElement,()-> # move to the left
+					_t.clarityTimeoutIds.left = setTimeout(()->
+						_t.animateAtom(0,500,true,$curElement,()-> # move to the right
 							_t.clarityTimeoutIds.mid = setTimeout(()->
 								_t.animateAtom($imageContainer.width() / 2,250,true,$curElement,() -> # move to the middle
 									$curElement.trigger('autoAnimateDone')
