@@ -1,5 +1,5 @@
 ###!
-sarine.viewer.clarity - v0.6.0 -  Thursday, November 30th, 2017, 11:52:46 AM 
+sarine.viewer.clarity - v0.7.0 -  Sunday, December 3rd, 2017, 11:46:09 AM 
  The source code, name, and look and feel of the software are Copyright © 2015 Sarine Technologies Ltd. All Rights Reserved. You may not duplicate, copy, reuse, sell or otherwise exploit any portion of the code, content or visual design elements without express written permission from Sarine Technologies Ltd. The terms and conditions of the sarine.com website (http://sarine.com/terms-and-conditions/) apply to the access and use of this software.
 ###
 
@@ -243,11 +243,11 @@ class Clarity extends Viewer
 		$curElement = _t.element
 
 		$curElement.on("clearAnimations",() ->
+			# Stop any animation in prograss
+			$curElement.find('.cq-beforeafter .cq-beforeafter-handle').finish()
 			clearTimeout(_t.clarityTimeoutIds.left)
 			clearTimeout(_t.clarityTimeoutIds.right)
 			clearTimeout(_t.clarityTimeoutIds.mid)
-			# Buttons animation
-			$curElement.find('.cq-beforeafter .cq-beforeafter-handle').finish()
 			# Prevent the tooltip from appearing when on other experiences
 			$curElement.find(".cq-beforeafter i").tooltipster('hide')
 		)
