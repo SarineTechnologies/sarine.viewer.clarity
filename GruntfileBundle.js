@@ -136,10 +136,13 @@ module.exports = function(grunt) {
             grunt.file.write(file, contents);
         });
     });
-    grunt.registerTask('copyVersion' , 'copy version from package.json to sarine.viewer.clarity.config' , function (){
+       grunt.registerTask('copyVersion' , 'copy version from package.json to sarine.viewer.clarity.config' , function (){
         var packageFile = grunt.file.readJSON(target + 'package.json');
         var configFileName = target + packageFile.name + '.config';
-        var copyFile = grunt.file.readJSON(configFileName);
+        var copyFile = null;
+        if (grunt.file.exists(configFileName))
+            copyFile = grunt.file.readJSON(configFileName);
+        
         if (copyFile == null)
             copyFile = {};
 
