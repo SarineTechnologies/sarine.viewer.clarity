@@ -140,6 +140,9 @@ module.exports = function(grunt) {
         var packageFile = grunt.file.readJSON(target + 'package.json');
         var configFileName = target + packageFile.name + '.config';
         var copyFile = grunt.file.readJSON(configFileName);
+        if (copyFile == null)
+            copyFile = {};
+
         copyFile.version = packageFile.version;
         grunt.file.write(configFileName , JSON.stringify(copyFile));
     });
