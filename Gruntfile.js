@@ -93,7 +93,8 @@ module.exports = function(grunt) {
         'uglify',
         'clean:postbuild',
         'copyVersion',
-        'copy:bundle'
+        'copy:bundle',
+        'clean:bundlecoffee' //remove bundle.coffe file - not necessary
     ]);
 
        grunt.registerTask('copyVersion' , 'copy version from package.json to sarine.viewer.clarity.config' , function (){
