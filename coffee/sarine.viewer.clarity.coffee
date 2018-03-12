@@ -116,7 +116,7 @@ class Clarity extends Viewer
 		return
 	# allow animation of the atom for a specified position
 	registerAnimateEvent:(_t)->
-		$curElement = _t.element
+		$curElement = $('.viewer.clarityView')
 		$imageContainer = $curElement.find('.cq-beforeafter')
 
 		$curElement.on("animateClarity",(event,data) ->
@@ -156,7 +156,7 @@ class Clarity extends Viewer
 		return
 	# auto animate the atom to the left, right and mid
 	registerAutoAnimateEvent:(_t)->
-		$curElement = @element
+		$curElement = $('.viewer.clarityView')
 		$imageContainer = $curElement.find(".cq-beforeafter")
 
 		$curElement.on("autoAnimateClarity",() ->
