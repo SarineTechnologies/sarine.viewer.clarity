@@ -27,7 +27,7 @@ class Clarity extends Viewer
 		#get drag text from reource data
 		dragText = options.element.data().dataDragText
 
-		if (dragText == "")
+		if (dragText == "" || dragText == undefined)
 			dragText = defaultDragText
 
 		# external resources - 2 images
@@ -119,15 +119,15 @@ class Clarity extends Viewer
 		$curElement = _t.element
 		$imageContainer = $curElement.find('.cq-beforeafter')
 
-		$curElement.on("animateClarity",(event,position,duration) ->
+		$curElement.on("animateClarity",(event,data) ->
 			positionToAnimate = 0
 		
-			switch position
+			switch data.direction
 				when "left" then positionToAnimate = 0
 				when "middle" then positionToAnimate = $imageContainer.width() / 2
 				when "right" then positionToAnimate = $imageContainer.width()
 
-			_t.animateAtom(positionToAnimate,duration,false,$curElement)
+			_t.animateAtom(positionToAnimate,data.speed,false,$curElement)
 		)
 
 		return
@@ -168,8 +168,11 @@ class Clarity extends Viewer
 							$curElement.trigger('leftEdge')
 							_t.clarityTimeoutIds.mid = setTimeout(()->
 								_t.animateAtom($imageContainer.width() / 2,250,true,$curElement,() -> # move to the middle
-									$(".viewer.clarityView i").tooltipster('reposition')
-									$curElement.find("i").trigger('middle')
+									setTimeout(() ->
+										_t.clearTimeoutsEvents()
+										$curElement.trigger('middle')
+										return
+									, 500)
 								)
 								return
 							,500)
@@ -191,22 +194,24 @@ class Clarity extends Viewer
 		_t = @
 		$curElement = _t.element
 
-		$curElement.on("clearAnimations",() ->
-			# Stop any animation in prograss
-			$curElement.find('.cq-beforeafter .cq-beforeafter-handle').finish()
-			clearTimeout(_t.clarityTimeoutIds.left)
-			clearTimeout(_t.clarityTimeoutIds.right)
-			clearTimeout(_t.clarityTimeoutIds.mid)
-			# Prevent the tooltip from appearing when on other experiences
-			$curElement.find(".cq-beforeafter i").tooltipster('hide')
-		)
-
 		$curElement.on("updateTooltip",(event,action) ->
 			$tooltip = $curElement.find("i")
 			if($tooltip)
 				$tooltip.tooltipster(action)
 		)
 
+		return
+
+	clearTimeoutsEvents: () ->
+		_t = @
+		$curElement = _t.element
+		# Stop any animation in prograss
+		$curElement.find('.cq-beforeafter .cq-beforeafter-handle').finish()
+		clearTimeout(_t.clarityTimeoutIds.left)
+		clearTimeout(_t.clarityTimeoutIds.right)
+		clearTimeout(_t.clarityTimeoutIds.mid)
+		# Prevent the tooltip from appearing when on other experiences
+		$curElement.find(".cq-beforeafter i").tooltipster('hide')
 		return
 
 	# Excecute the animation
