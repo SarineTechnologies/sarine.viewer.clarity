@@ -10,7 +10,8 @@ class Clarity extends Viewer
 	
 	constructor: (options) -> 		
 		super(options)	
-
+		
+		@atomVersion = options.atomVersion
 		@clarityTimeoutIds = {
 			left : null,
 			right : null,
@@ -73,7 +74,7 @@ class Clarity extends Viewer
 					]
 					
 					_t.loadAssets(assets,()->
-						beforeAfter = [{element:'script',src:baseUrl + 'clarity/sarine.init.min.js'}]
+						beforeAfter = [{element:'script',src:baseUrl + 'clarity/sarine.init.min.js?' + _t.atomVersion}]
 						_t.loadAssets(beforeAfter,()->
 							# Hide the tool tip on load, in widget it causes display issue.
 							$(".cq-beforeafter i").tooltipster('hide')
