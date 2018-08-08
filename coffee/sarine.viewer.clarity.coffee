@@ -77,7 +77,8 @@ class Clarity extends Viewer
 						beforeAfter = [{element:'script',src:baseUrl + 'clarity/sarine.init.min.js'}]
 						_t.loadAssets(beforeAfter,()->
 							# Hide the tool tip on load, in widget it causes display issue.
-							$(".cq-beforeafter i").tooltipster('hide')
+							# $(".cq-beforeafter i").tooltipster('hide')
+							$(".tooltipster-base").hide()							
 
 							# register events for external use (widget, viewer creator..)
 							_t.registerAnimateEvent(_t)
@@ -229,6 +230,7 @@ class Clarity extends Viewer
 				$resize.css('width', now)
 				if($tooltip and isAutoAnimate)
 					$tooltip.tooltipster('reposition')
+					$(".tooltipster-base").show()
 					$tooltip.tooltipster('show')
 			,
 			complete:completeCallback})
