@@ -83,6 +83,7 @@ class Clarity extends Viewer
 							$('.cq-beforeafter-resize svg').css
 								'position': 'absolute'
 								'top': 0
+								'display': 'block'
 							$('.cq-beforeafter-resize svg g').attr
 								'fill': if clarityConfig? and clarityConfig.fillcolor then clarityConfig.fillcolor else "IndianRed",
 								'fill-opacity': if clarityConfig? and clarityConfig.filltransparency then clarityConfig.filltransparency else "0.3",
