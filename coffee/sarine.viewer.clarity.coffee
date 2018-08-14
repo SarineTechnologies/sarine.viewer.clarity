@@ -79,14 +79,10 @@ class Clarity extends Viewer
 					
 					if (markingSvg)
 						$('.cq-beforeafter-resize').append $('<div>')
-						$('.cq-beforeafter-resize div').load markingSvg , (svg)->
-
-							elem = $('.cq-beforeafter-resize svg')
-							elem.width $('.cq-beforeafter').width()
-							elem.height $('.cq-beforeafter').height()
-							elem.css
+						$('.cq-beforeafter-resize div').load markingSvg, (svg)->
+							$('.cq-beforeafter-resize svg').css
 								'position': 'absolute'
-								'top': 0	
+								'top': 0
 							$('.cq-beforeafter-resize svg g').attr
 								'fill': if clarityConfig? and clarityConfig.fillcolor then clarityConfig.fillcolor else "IndianRed",
 								'fill-opacity': if clarityConfig? and clarityConfig.filltransparency then clarityConfig.filltransparency else "0.3",
