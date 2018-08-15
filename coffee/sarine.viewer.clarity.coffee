@@ -58,6 +58,7 @@ class Clarity extends Viewer
 	first_init : ()->
 		defer = $.Deferred()
 		_t = @
+		defaultStyle = { "fill": "indianred", "fill-opacity": 0.3, "stroke": "yellow", "stroke-width": 5, "stroke-opacity": 0.2 }
 
 		if (plottingImage && diamondImage && (type == "halo" && markingSvg || type == "accurate"))
 			_t.loadImage(plottingImage).then((img)->
@@ -80,13 +81,15 @@ class Clarity extends Viewer
 					if (markingSvg)
 						$('.cq-beforeafter-resize').append $('<div>')
 						$('.cq-beforeafter-resize div').load markingSvg, (svg)->
-							$('.cq-beforeafter-resize svg g').attr
-								'fill': if clarityConfig? and clarityConfig.fillcolor then clarityConfig.fillcolor else "IndianRed",
-								'fill-opacity': if clarityConfig? and clarityConfig.filltransparency then clarityConfig.filltransparency else "0.3",
-								'stroke': if clarityConfig? and clarityConfig.bordercolor then clarityConfig.bordercolor else "Yellow",
-								'stroke-width': if clarityConfig? and clarityConfig.borderwidth then clarityConfig.borderwidth else "1",								
-								'stroke-opacity': if clarityConfig? and clarityConfig.bordertransparency then clarityConfig.bordertransparency else "0.2"
-							
+							elem = $('.cq-beforeafter-resize svg g')
+							if clarityConfig
+								for key of clarityConfig.style
+									elem.attr key, clarityConfig.style[key]
+
+							for key of defaultStyle
+								if !elem.attr key 
+									elem.attr key, defaultStyle[key]
+									
 							_t.loadPluginAssets(_t, defer)	
 					else
 						_t.loadPluginAssets(_t, defer)					
