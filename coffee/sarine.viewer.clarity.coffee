@@ -1,10 +1,13 @@
 
 class Clarity extends Viewer
 	
+	clarityConfig = null
 	defaultDragText = "Drag Me To Compare"
 	iconCss = null
+	type = null
 	plottingImage = ""
 	diamondImage = ""
+	markingSvg = ""
 	baseUrl = ""
 	dragText = ""
 	
@@ -18,12 +21,12 @@ class Clarity extends Viewer
 			mid : null
 		}
 		# get from config the drag icon color
-		configArray = window.configuration.experiences.filter((i)-> return i.atom == 'clarityView')
-		clarityConfig = null
+		configArray = window.configuration.experiences.filter((i)-> return i.atom == 'clarityView')		
 		if (configArray.length != 0)
 			clarityConfig = configArray[0]
 		
 		iconCss = if clarityConfig? and clarityConfig.iconCss then clarityConfig.iconCss else "default-theme"
+		type = if clarityConfig? and clarityConfig.type then clarityConfig.type else "accurate"
 		
 		#get drag text from reource data
 		dragText = options.element.data().dataDragText
@@ -31,14 +34,22 @@ class Clarity extends Viewer
 		if (dragText == "" || dragText == undefined)
 			dragText = defaultDragText
 
-		# external resources - 2 images
-		plottingImage = stones[0].viewers.resources["clarityMeshFinalPlottingImage"] 
-		if (!plottingImage)
-			plottingImage = ""
-
+		# external resources - 2 images + svg
+		if type == 'halo'
+			markingSvg = stones[0].viewers.resources["clarityHaloMarkingSVG"]
+			plottingImage = stones[0].viewers.resources['clarityDiamondImageDark']
+		else 
+			markingSvg = stones[0].viewers.resources["clarityAccurateMarkingSVG"]
+			plottingImage = if markingSvg then stones[0].viewers.resources['clarityMeshImage'] else stones[0].viewers.resources['clarityMeshFinalPlottingImage']
+		
 		diamondImage = stones[0].viewers.resources["clarityDiamondImage"]
+		
 		if (!diamondImage)
-			diamondImage = ""
+			diamondImage = ""		
+		if (!markingSvg)
+			markingSvg = ""
+		if (!plottingImage)
+			plottingImage = ""		
 
 		baseUrl = options.baseUrl + "atomic/v1/assets/"
 	convertElement : () ->
@@ -47,15 +58,21 @@ class Clarity extends Viewer
 	first_init : ()->
 		defer = $.Deferred()
 		_t = @
+		defaultStyle = null
 
-		if (plottingImage && diamondImage)
+		if type == 'halo'
+			defaultStyle = { "fill": "#B3C7EF", "fill-opacity": 0.5, "stroke": "#ffffff", "stroke-width": 7, "stroke-opacity": 0.8 }
+		else 
+			defaultStyle = { "fill": "white", "fill-opacity": 0.5, "stroke": "#4040c4", "stroke-width": 4, "stroke-opacity": 2 }
+
+		if (plottingImage && diamondImage && (type == "halo" && markingSvg || type == "accurate"))
 			_t.loadImage(plottingImage).then((img)->
 				imageElement = $(img)
 				if(!imageElement.hasClass('no_stone'))
 					_t.element.append("<div class=\'cq-beforeafter\'>
 											<img class='cq-beforeafter-img' src='#{diamondImage}'>
 											<div class='cq-beforeafter-resize'>
-												<img class='cq-beforeafter-img' src='#{plottingImage}'>
+												<img class='cq-beforeafter-img' src='#{plottingImage}'>											
 											</div>
 											<span class='cq-beforeafter-handle'>
 												<i class='entypo-icon entypo-icon-code #{iconCss}' title='#{dragText}'>
@@ -65,31 +82,22 @@ class Clarity extends Viewer
 												</i> 
 											</span>
 										</div>")
-					# load plugin assets
-					assets = [
-						{element:'script',src:baseUrl + 'tooltipster/jquery.tooltipster.min.js'},
-						{element:'script',src:baseUrl + 'beforeafter/jquery.mobile.custom.min.js'},
-						{element:'link',src:baseUrl + 'beforeafter/style.css'},
-						{element:'link',src:baseUrl + 'tooltipster/tooltipster.css'}
-					]
 					
-					_t.loadAssets(assets,()->
-						beforeAfter = [{element:'script',src:baseUrl + 'clarity/sarine.init.min.js'}]
-						_t.loadAssets(beforeAfter,()->
-							# Hide the tool tip on load, in widget it causes display issue.
-							# $(".cq-beforeafter i").tooltipster('hide')
-							$(".tooltipster-base").hide()							
+					if (markingSvg)
+						$('.cq-beforeafter-resize').append $('<div>')
+						$('.cq-beforeafter-resize div').load markingSvg, (svg)->
+							elem = $('.cq-beforeafter-resize svg g')
+							if clarityConfig
+								for key of clarityConfig.style
+									elem.attr key, clarityConfig.style[key]
 
-							# register events for external use (widget, viewer creator..)
-							_t.registerAnimateEvent(_t)
-							_t.registerAutoAnimateEvent(_t)
-							_t.registerClearAnimationEvent(_t)
-							_t.registerDraggingEvent(_t)
-							defer.resolve(_t)
-						,_t.atomVersion
-						)
-					)
-					
+							for key of defaultStyle
+								if !elem.attr key 
+									elem.attr key, defaultStyle[key]
+									
+							_t.loadPluginAssets(_t, defer)	
+					else
+						_t.loadPluginAssets(_t, defer)					
 				else
 					_t.loadNoStoneImage(_t)
 					defer.resolve(_t)
@@ -116,6 +124,33 @@ class Clarity extends Viewer
 			canvas[0].getContext("2d").drawImage(img, 0, 0, img.width, img.height)
 			_t.element.append(canvas)
 		
+		return
+	loadPluginAssets : (_t, defer)->
+		# load plugin assets
+		assets = [
+			{element:'script',src:baseUrl + 'tooltipster/jquery.tooltipster.min.js'},
+			{element:'script',src:baseUrl + 'beforeafter/jquery.mobile.custom.min.js'},
+			{element:'link',src:baseUrl + 'beforeafter/style.css'},
+			{element:'link',src:baseUrl + 'tooltipster/tooltipster.css'}
+		]
+		
+		_t.loadAssets(assets,()->
+			beforeAfter = [{element:'script',src:baseUrl + 'clarity/sarine.init.min.js'}]
+			_t.loadAssets(beforeAfter,()->
+				# Hide the tool tip on load, in widget it causes display issue.
+				# $(".cq-beforeafter i").tooltipster('hide')
+				$(".tooltipster-base").hide()							
+
+				# register events for external use (widget, viewer creator..)
+				_t.registerAnimateEvent(_t)
+				_t.registerAutoAnimateEvent(_t)
+				_t.registerClearAnimationEvent(_t)
+				_t.registerDraggingEvent(_t)
+				defer.resolve(_t)
+			,_t.atomVersion
+			)
+		)
+
 		return
 	# allow animation of the atom for a specified position
 	registerAnimateEvent:(_t)->
