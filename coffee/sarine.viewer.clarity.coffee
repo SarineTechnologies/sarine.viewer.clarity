@@ -58,7 +58,12 @@ class Clarity extends Viewer
 	first_init : ()->
 		defer = $.Deferred()
 		_t = @
-		defaultStyle = { "fill": "indianred", "fill-opacity": 0.3, "stroke": "yellow", "stroke-width": 5, "stroke-opacity": 0.2 }
+		defaultStyle = null
+
+		if type == 'halo'
+			defaultStyle = { "fill": "#B3C7EF", "fill-opacity": 0.5, "stroke": "#ffffff", "stroke-width": 7, "stroke-opacity": 0.8 }
+		else 
+			defaultStyle = { "fill": "white", "fill-opacity": 0.5, "stroke": "#4040c4", "stroke-width": 4, "stroke-opacity": 2 }
 
 		if (plottingImage && diamondImage && (type == "halo" && markingSvg || type == "accurate"))
 			_t.loadImage(plottingImage).then((img)->
