@@ -99,12 +99,10 @@ class Clarity extends Viewer
 					else
 						_t.loadPluginAssets(_t, defer)					
 				else
-					_t.loadNoStoneImage(_t)
-					defer.resolve(_t)
+					_t.loadNoStoneImage(_t, defer)					
 			)
 		else
-			_t.loadNoStoneImage(_t)
-			defer.resolve(_t)
+			_t.loadNoStoneImage(_t, defer)			
 
 		defer
 
@@ -117,13 +115,13 @@ class Clarity extends Viewer
 		defer
 	play : () -> return		
 	stop : () -> return
-	loadNoStoneImage : (_t)->
+	loadNoStoneImage : (_t, defer)->
 		_t.loadImage(_t.callbackPic).then (img)->
 			canvas = $("<canvas >")
 			canvas.attr({"class": "no_stone" ,"width": img.width, "height": img.height}) 
 			canvas[0].getContext("2d").drawImage(img, 0, 0, img.width, img.height)
 			_t.element.append(canvas)
-		
+			defer.resolve(_t)
 		return
 	loadPluginAssets : (_t, defer)->
 		# load plugin assets
