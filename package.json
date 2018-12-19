@@ -10,6 +10,7 @@
     "sarine.viewer": "https://github.com/SarineTechnologies/sarine.viewer.git#dev"
   },
   "devDependencies": {
+    "cypress": "3.0.2",
     "grunt-git-release": "^0.1.3",
     "grunt": "^0.4.5",
     "grunt-bower-task": "^0.4.0",
@@ -38,6 +39,8 @@
   },
   "scripts": {
     "build": "grunt build",
-    "dev": "grunt dev"
+    "dev": "grunt dev",
+    "test-dev": "cypress open --env DEMO_VIEWER=http://localhost:3000/api/demo/,DEMO_STONE=X3LPR2RWMW5,DEMO_CONFIGURATION=AUTOTEST1",
+    "test": "cypress run --env"
   }
 }
