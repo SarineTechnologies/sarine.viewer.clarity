@@ -1,4 +1,4 @@
-describe('Test atoms integration with viewer creator', () => {
+describe('Integration Tests of Clarity atom', () => {
 
     let demoUrl = [Cypress.env('DEMO_VIEWER'), 'demo-ondemand.html?', Cypress.env('DEMO_STONE'), '/', Cypress.env('DEMO_CONFIGURATION')].join('')
      let events = {
@@ -30,12 +30,7 @@ describe('Test atoms integration with viewer creator', () => {
     describe('Clarity', () => {
         it('Check resize image when drag', () => {
             //Click the left nav button
-
-            cy.window().then((win) => {
-                win.runRenderOnDemand({
-                    atom: 'clarityView'
-                })
-                cy.wait(1000)
+                cy.wait(4000)
                 //Check the position of the toggle handle - should be to the left
                 cy.get('sarine-widget[atom="clarityView"] iframe').then(($iframe) => {
                     let $toggleButton = $iframe.contents().find('.cq-beforeafter-handle');
@@ -65,15 +60,9 @@ describe('Test atoms integration with viewer creator', () => {
                     })
 
                 })
-            })
         })
         it('Compare 2 images width', () => {
-
-            cy.window().then((win) => {
-                win.runRenderOnDemand({
-                    atom: 'clarityView'
-                })
-                cy.wait(1000)
+                cy.wait(2000)
                 cy.get('sarine-widget[atom="clarityView"] iframe').then(($iframe) => {
                     let $toggleButton = $iframe.contents().find('.cq-beforeafter-img')
                     cy.wrap($toggleButton).then(($images) => {
@@ -81,14 +70,13 @@ describe('Test atoms integration with viewer creator', () => {
                         expect($images[0].width).to.equal($images[0].width)
                     })
                 })
-            })
         })
         it('Check icon appear according to configuration', () => {
-            cy.wait(1000)
+            cy.wait(2000)
             cy.get('sarine-widget[atom="clarityView"] iframe').then(($iframe) => {
                 var clarityConfig = $iframe[0].contentWindow.configuration.experiences.filter((i) => {
                     return i.atom == 'clarityView'
-                });
+                })[0];
                 let iconCss = clarityConfig.iconCss || "default-theme";
                 var $icon = $iframe.contents().find('.entypo-icon-code');
                 expect($icon[0].className).to.contain(iconCss)
@@ -96,11 +84,8 @@ describe('Test atoms integration with viewer creator', () => {
         })
 
         it('Check clarity image equals to the correct resource', () => {
-            cy.wait(1000)
+            cy.wait(2000)
             cy.get('sarine-widget[atom="clarityView"] iframe').then(($iframe) => {
-                var clarityConfig = $iframe[0].contentWindow.configuration.experiences.filter((i) => {
-                    return i.atom == 'clarityView'
-                });
                 var diamondImage = $iframe[0].contentWindow.stones[0].viewers.resources["clarityDiamondImage"]
                 var image = $iframe.contents().find('.cq-beforeafter-img')
                 cy.wrap(image).then(($img) => {
@@ -110,11 +95,11 @@ describe('Test atoms integration with viewer creator', () => {
         })
 
         it('Check images type appear according to configuration', () => {
-            cy.wait(1000)
+            cy.wait(2000)
             cy.get('sarine-widget[atom="clarityView"] iframe').then(($iframe) => {
                 var clarityConfig = $iframe[0].contentWindow.configuration.experiences.filter((i) => {
                     return i.atom == 'clarityView'
-                });
+                })[0];
                 let type = clarityConfig.type || "accurate";
                 let plottingImage, markingSvg;
                 if (type == 'halo') {
@@ -138,11 +123,11 @@ describe('Test atoms integration with viewer creator', () => {
         })
 
         it('Check svg style according to configuration', () => {
-            cy.wait(1000)
+            cy.wait(2000)
             cy.get('sarine-widget[atom="clarityView"] iframe').then(($iframe) => {
                 var clarityConfig = $iframe[0].contentWindow.configuration.experiences.filter((i) => {
                     return i.atom == 'clarityView'
-                });
+                })[0];
                 let defaultStyle = {};
                 if (clarityConfig.type == 'halo')
                     defaultStyle = {
@@ -171,7 +156,7 @@ describe('Test atoms integration with viewer creator', () => {
                     let elementStyle
                     for (var p in defaultStyle) {
                         elementStyle = clarityConfig.style && clarityConfig.style[p] ? clarityConfig.style[p] : defaultStyle[p].toString();
-                        expect(attributes[p].nodeValue).to.equal(elementStyle)
+                        expect(attributes[p].nodeValue.toString()).to.equal(elementStyle.toString())
                     }
 
 
