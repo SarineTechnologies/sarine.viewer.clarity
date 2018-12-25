@@ -16,7 +16,7 @@ describe('Integration Tests of Clarity atom', () => {
 
         cy.server()
         cy.route({
-            url: '**/json/v1/*/**'
+            url: '**/json/v2/*/**'
         }).as('sarineJsonResponseRoute')
         cy.wait('@sarineJsonResponseRoute').its('status').should('eq', 200)
         cy.window().then((win) => {
