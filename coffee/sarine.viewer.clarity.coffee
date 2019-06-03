@@ -20,6 +20,7 @@ class Clarity extends Viewer
 			right : null,
 			mid : null
 		}
+
 		# get from config the drag icon color
 		configArray = window.configuration.experiences.filter((i)-> return i.atom == 'clarityView')		
 		if (configArray.length != 0)
@@ -35,14 +36,21 @@ class Clarity extends Viewer
 			dragText = defaultDragText
 
 		# external resources - 2 images + svg
-		if type == 'halo'
-			markingSvg = stones[0].viewers.resources["clarityHaloMarkingSVG"]
-			plottingImage = stones[0].viewers.resources['clarityDiamondImageDark']
-		else 
-			markingSvg = stones[0].viewers.resources["clarityAccurateMarkingSVG"]
-			plottingImage = if markingSvg then stones[0].viewers.resources['clarityMeshImage'] else stones[0].viewers.resources['clarityMeshFinalPlottingImage']
+		@src= options.extraData	 &&options.extraData.extraData && options.extraData.extraData.src 	
+
+		if(@src)
+			markingSvg = @src + 'normal.svg'
+			plottingImage =  @src + 'mapped.png'
+			diamondImage = @src + 'diamondImage.png'
+		else
+			if type == 'halo'
+				markingSvg = stones[0].viewers.resources["clarityHaloMarkingSVG"]
+				plottingImage = stones[0].viewers.resources['clarityDiamondImageDark']
+			else 
+				markingSvg = stones[0].viewers.resources["clarityAccurateMarkingSVG"]
+				plottingImage = if markingSvg then stones[0].viewers.resources['clarityMeshImage'] else stones[0].viewers.resources['clarityMeshFinalPlottingImage']
 		
-		diamondImage = stones[0].viewers.resources["clarityDiamondImage"]
+			diamondImage = stones[0].viewers.resources["clarityDiamondImage"]
 		
 		if (!diamondImage)
 			diamondImage = ""		
