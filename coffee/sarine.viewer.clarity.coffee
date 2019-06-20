@@ -39,9 +39,9 @@ class Clarity extends Viewer
 		@src= options.extraData	 &&options.extraData.extraData && options.extraData.extraData.src 	
 
 		if(@src)
-			markingSvg = @src + 'normal.svg'
-			plottingImage =  @src + 'mapped.png'
-			diamondImage = @src + 'diamondImage.png'
+			markingSvg = @src.folderUrl + @src.marking #+ 'ClarityAccurateMarkingSVG.svg'
+			plottingImage = @src.folderUrl + @src.plotting# + 'ClarityMeshImage.png'
+			diamondImage = @src.folderUrl + @src.diamond #+ 'ClarityDiamondImage.png'
 		else
 			if type == 'halo'
 				markingSvg = stones[0].viewers.resources["clarityHaloMarkingSVG"]
