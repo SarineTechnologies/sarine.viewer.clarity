@@ -36,7 +36,7 @@ class Clarity extends Viewer
 			dragText = defaultDragText
 
 		# external resources - 2 images + svg
-		@src= options.extraData	 &&options.extraData.extraData && options.extraData.extraData.src 	
+		@src= options.extraData	 && options.extraData.src 	
 
 		if(@src)
 			markingSvg = @src.folderUrl + @src.marking #+ 'ClarityAccurateMarkingSVG.svg'
