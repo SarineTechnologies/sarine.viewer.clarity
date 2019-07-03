@@ -36,7 +36,7 @@ class Clarity extends Viewer
 			dragText = defaultDragText
 
 		# external resources - 2 images + svg
-		@src= options.extraData	 && options.extraData.src 	
+		@src= options.extraData	 && options.extraData.src || options.extraData	&& options.extraData.extraData && options.extraData.extraData.src 	
 
 		if(@src)
 			markingSvg = @src.folderUrl + @src.marking #+ 'ClarityAccurateMarkingSVG.svg'
@@ -74,40 +74,49 @@ class Clarity extends Viewer
 			defaultStyle = { "fill": "white", "fill-opacity": 0.5, "stroke": "#4040c4", "stroke-width": 4, "stroke-opacity": 2 }
 
 		if (plottingImage && diamondImage && (type == "halo" && markingSvg || type == "accurate"))
-			_t.loadImage(plottingImage).then((img)->
-				imageElement = $(img)
-				if(!imageElement.hasClass('no_stone'))
-					_t.element.append("<div class=\'cq-beforeafter\'>
-											<img class='cq-beforeafter-img' src='#{diamondImage}'>
-											<div class='cq-beforeafter-resize'>
-												<img class='cq-beforeafter-img' src='#{plottingImage}'>											
-											</div>
-											<span class='cq-beforeafter-handle'>
-												<i class='entypo-icon entypo-icon-code #{iconCss}' title='#{dragText}'>
-													<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'>
-														<path d='M14.578 16.594l4.641-4.594-4.641-4.594 1.406-1.406 6 6-6 6zM9.422 16.594l-1.406 1.406-6-6 6-6 1.406 1.406-4.641 4.594z'></path>
-													</svg>
-												</i> 
-											</span>
-										</div>")
-					
-					if (markingSvg)
-						$('.cq-beforeafter-resize').append $('<div>')
-						$('.cq-beforeafter-resize div').load markingSvg, (svg)->
-							elem = $('.cq-beforeafter-resize svg g')
-							if clarityConfig
-								for key of clarityConfig.style
-									elem.attr key, clarityConfig.style[key]
+			assets = [
+				{element:'link',src:baseUrl + 'beforeafter/style.css'},
+				{element:'link',src:baseUrl + 'tooltipster/tooltipster.css'},
+				{element:'script',src:baseUrl + 'tooltipster/jquery.tooltipster.min.js'},
+				{element:'script',src:baseUrl + 'beforeafter/jquery.mobile.custom.min.js'}
+			]
+		
+			_t.loadAssets(assets,()->
+				_t.loadImage(plottingImage).then((img)->
+					imageElement = $(img)
+					if(!imageElement.hasClass('no_stone'))
+						_t.element.append("<div class=\'cq-beforeafter\'>
+												<img class='cq-beforeafter-img' src='#{diamondImage}'>
+												<div class='cq-beforeafter-resize'>
+													<img class='cq-beforeafter-img' src='#{plottingImage}'>											
+												</div>
+												<span class='cq-beforeafter-handle'>
+													<i class='entypo-icon entypo-icon-code #{iconCss}' title='#{dragText}'>
+														<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'>
+															<path d='M14.578 16.594l4.641-4.594-4.641-4.594 1.406-1.406 6 6-6 6zM9.422 16.594l-1.406 1.406-6-6 6-6 1.406 1.406-4.641 4.594z'></path>
+														</svg>
+													</i> 
+												</span>
+											</div>")
+						
+						if (markingSvg)
+							$('.cq-beforeafter-resize').append $('<div>')
+							$('.cq-beforeafter-resize div').load markingSvg, (svg)->
+								elem = $('.cq-beforeafter-resize svg g')
+								if clarityConfig
+									for key of clarityConfig.style
+										elem.attr key, clarityConfig.style[key]
 
-							for key of defaultStyle
-								if !elem.attr key 
-									elem.attr key, defaultStyle[key]
-									
-							_t.loadPluginAssets(_t, defer)	
+								for key of defaultStyle
+									if !elem.attr key 
+										elem.attr key, defaultStyle[key]
+										
+								_t.loadPluginAssets(_t, defer)	
+						else
+							_t.loadPluginAssets(_t, defer)					
 					else
-						_t.loadPluginAssets(_t, defer)					
-				else
-					_t.loadNoStoneImage(_t, defer)					
+						_t.loadNoStoneImage(_t, defer)	
+				)				
 			)
 		else
 			_t.loadNoStoneImage(_t, defer)			
@@ -133,16 +142,8 @@ class Clarity extends Viewer
 		return
 	loadPluginAssets : (_t, defer)->
 		# load plugin assets
-		assets = [
-			{element:'script',src:baseUrl + 'tooltipster/jquery.tooltipster.min.js'},
-			{element:'script',src:baseUrl + 'beforeafter/jquery.mobile.custom.min.js'},
-			{element:'link',src:baseUrl + 'beforeafter/style.css'},
-			{element:'link',src:baseUrl + 'tooltipster/tooltipster.css'}
-		]
-		
-		_t.loadAssets(assets,()->
-			beforeAfter = [{element:'script',src:baseUrl + 'clarity/sarine.init.min.js'}]
-			_t.loadAssets(beforeAfter,()->
+		beforeAfter = [{element:'script',src:baseUrl + 'clarity/sarine.init.min.js'}]
+		_t.loadAssets(beforeAfter,()->
 				# Hide the tool tip on load, in widget it causes display issue.
 				# $(".cq-beforeafter i").tooltipster('hide')
 				$(".tooltipster-base").hide()							
@@ -153,10 +154,8 @@ class Clarity extends Viewer
 				_t.registerClearAnimationEvent(_t)
 				_t.registerDraggingEvent(_t)
 				defer.resolve(_t)
-			,_t.atomVersion
-			)
-		)
-
+		,_t.atomVersion
+		)		
 		return
 	# allow animation of the atom for a specified position
 	registerAnimateEvent:(_t)->
