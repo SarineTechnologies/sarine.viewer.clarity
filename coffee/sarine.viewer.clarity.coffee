@@ -146,13 +146,15 @@ class Clarity extends Viewer
 		_t.loadAssets(beforeAfter,()->
 				# Hide the tool tip on load, in widget it causes display issue.
 				# $(".cq-beforeafter i").tooltipster('hide')
-				$(".tooltipster-base").hide()							
-
+									
 				# register events for external use (widget, viewer creator..)
 				_t.registerAnimateEvent(_t)
 				_t.registerAutoAnimateEvent(_t)
 				_t.registerClearAnimationEvent(_t)
 				_t.registerDraggingEvent(_t)
+				$(".tooltipster-base").ready(()->
+												$(".tooltipster-base").hide()	
+											)
 				defer.resolve(_t)
 		,_t.atomVersion
 		)		
@@ -244,6 +246,7 @@ class Clarity extends Viewer
 		)
 
 		return
+
 
 	clearTimeoutsEvents: () ->
 		_t = @
