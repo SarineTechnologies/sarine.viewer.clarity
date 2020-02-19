@@ -44,13 +44,13 @@ class Clarity extends Viewer
 			diamondImage = @src.folderUrl + @src.diamond #+ 'ClarityDiamondImage.png'
 		else
 			if type == 'halo'
-				markingSvg = stones[0].viewers.resources["clarityHaloMarkingSVG"]
-				plottingImage = stones[0].viewers.resources['clarityDiamondImageDark']
+				markingSvg = stones[0].viewers["clarityHaloMarkingSVG"]
+				plottingImage = stones[0].viewers['clarityDiamondImageDark']
 			else 
-				markingSvg = stones[0].viewers.resources["clarityAccurateMarkingSVG"]
-				plottingImage = if markingSvg then stones[0].viewers.resources['clarityMeshImage'] else stones[0].viewers.resources['clarityMeshFinalPlottingImage']
+				markingSvg = stones[0].viewers["clarityAccurateMarkingSVG"]
+				plottingImage = if markingSvg then stones[0].viewers['clarityMeshImage'] else stones[0].viewers['clarityMeshFinalPlottingImage']
 		
-			diamondImage = stones[0].viewers.resources["clarityDiamondImage"]
+			diamondImage = stones[0].viewers["clarityDiamondImage"]
 		
 		if (!diamondImage)
 			diamondImage = ""		
