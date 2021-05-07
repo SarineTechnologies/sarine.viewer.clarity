@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "cypress": "3.0.2",
-    "grunt": "^0.4.5",
+    "grunt": "^1.3.0",
     "grunt-bower-task": "^0.4.0",
     "grunt-cmd": "0.0.3",
     "grunt-coffeescript-concat": "^0.2.0",
