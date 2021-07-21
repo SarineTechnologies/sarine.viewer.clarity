@@ -45,7 +45,7 @@ class Clarity extends Viewer
 		else
 			if type == 'halo'
 				markingSvg = stones[0].viewers["clarityHaloMarkingSVG"]
-				plottingImage = stones[0].viewers['clarityMeshImage']
+				plottingImage = stones[0].viewers['clarityDiamondImageDark']
 			else 
 				markingSvg = stones[0].viewers["clarityAccurateMarkingSVG"]
 				plottingImage = if markingSvg then stones[0].viewers['clarityMeshImage'] else stones[0].viewers['clarityMeshFinalPlottingImage']
